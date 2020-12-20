@@ -18,9 +18,9 @@ function draw() {
     // Snowflake
     ctx.fillStyle = 'white';
     ctx.strokeStyle = 'white';
-    drawHexagon(ctx, w / 2, h / 2, size / 2);
+    // drawHexagon(ctx, w / 2, h / 2, size / 2);
     // ctx.fill();
-    ctx.stroke();
+    // ctx.stroke();
 
     drawSnowflake(ctx, w / 2, h / 2, size / 2);
 }
@@ -63,21 +63,46 @@ function drawHexagon(ctx, cx, cy, radius) {
  */
 function getRotatedPositions(px, py, cx, cy) {
     const points = [];
+    // Start angle between hypotenuse and horizontal
     let startAngle = 0;
     if (py !== cy) {
-        startAngle += Math.atan((px - cx) / (py - cy));
+        const dx = px - cx;
+        const dy = py - cy;
+        startAngle = Math.atan(dy / dx);
     }
+
+    // Radius
+    const r = Math.hypot((px - cx), (py - cy));
+    // Get positions
     for (let i = 0; i < 6; i++) {
         const angle = (60 * i) / 180 * Math.PI + startAngle;
-        const x = cx + Math.cos(angle) * (px - cx);
-        const y = cy + Math.sin(angle) * (px - cx);
+        const x = cx + Math.cos(angle) * r;
+        const y = cy + Math.sin(angle) * r;
         points.push({ x, y });
     }
     return points;
 }
 
+function throwDice(sides) {
+    return Math.random() < 1 / sides;
+}
+
+function drawWithSymmetry(ctx, px, py, cx, cy, hexRadius) {
+    const positions = getRotatedPositions(px, py, cx, cy);
+    for (let { x, y } of positions) {
+        drawHexagon(ctx, x, y, hexRadius);
+        ctx.stroke();
+        ctx.fill();
+        // break;
+    }
+}
+
+function checkCollision(ctx, px, py, hexRadius) {
+    // TODO:
+}
+
 function drawSnowflake(ctx, cx, cy, radius) {
-    const hexRadius = 5;
+    const hexRadius = radius / 100;
     const hexWidth = 2 * Math.cos(30 / 180 * Math.PI) * hexRadius;
     // Center
     drawHexagon(ctx, cx, cy, hexRadius);
@@ -89,12 +114,28 @@ function drawSnowflake(ctx, cx, cy, radius) {
     // Draw only one arm and use symmetry
     const armLength = radius / hexWidth;
     for (let i = 1; i < armLength; i++) {
-        const xArm = cx + hexWidth * i;
-        const positions = getRotatedPositions(xArm, cy, cx, cy);
-        for (let { x, y } of positions) {
-            drawHexagon(ctx, x, y, hexRadius);
-            ctx.stroke();
+        const px = cx + hexWidth * i;
+        const py = cy;
+        // ctx.strokeStyle = 'gray';
+        drawWithSymmetry(ctx, px, py, cx, cy, hexRadius);
+        if (throwDice(4)) {
+            // ctx.strokeStyle = 'white';
+            branch(ctx, px, py, cx, cy, hexRadius, hexWidth);
         }
     }
 
+}
+
+function branch(ctx, px, py, cx, cy, hexRadius, hexWidth) {
+    let nextX = px;
+    let nextY = py;
+    let nextY2 = py;
+    while (Math.random() < 0.8) {
+        nextX += hexWidth / 2;
+        const yOffset = Math.sin(60 / 180 * Math.PI) * hexWidth;
+        nextY += yOffset;
+        drawWithSymmetry(ctx, nextX, nextY, cx, cy, hexRadius);
+        nextY2 -= yOffset;
+        drawWithSymmetry(ctx, nextX, nextY2, cx, cy, hexRadius);
+    }
 }

@@ -1,3 +1,6 @@
+/**
+ * Main draw function
+ */
 function draw() {
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
@@ -26,7 +29,7 @@ function draw() {
 }
 
 /**
- *
+ * Draws a hexagon
  * @param {CanvasRenderingContext2D} ctx
  * @param {*} cx
  * @param {*} cy
@@ -82,6 +85,9 @@ function getRotatedPositions(px, py, cx, cy) {
     return points;
 }
 
+/**
+ * Draws a hexagon with all 6 symmetrical positions
+ */
 function drawWithSymmetry(ctx, px, py, cx, cy, hexRadius) {
     const positions = getRotatedPositions(px, py, cx, cy);
     for (let { x, y } of positions) {
@@ -92,30 +98,30 @@ function drawWithSymmetry(ctx, px, py, cx, cy, hexRadius) {
     }
 }
 
+/**
+ * Draws a snowflake
+ */
 function drawSnowflake(ctx, cx, cy, radius, hexRadius, pBranch) {
     const hexWidth = 2 * Math.cos(30 / 180 * Math.PI) * hexRadius;
     // Center
     drawHexagon(ctx, cx, cy, hexRadius);
     ctx.stroke();
-    // Inner rings
-    // const nRings = 3;
-
-
     // Draw only one arm and use symmetry
     const armLength = radius / hexWidth;
     for (let i = 1; i < armLength; i++) {
         const px = cx + hexWidth * i;
         const py = cy;
-        // ctx.strokeStyle = 'gray';
         drawWithSymmetry(ctx, px, py, cx, cy, hexRadius);
+        // Draw a branch from this position with some probability
         if (Math.random() < pBranch) {
-            // ctx.strokeStyle = 'white';
             branch(ctx, px, py, cx, cy, hexRadius, hexWidth);
         }
     }
-
 }
 
+/**
+ * Draws a branch
+ */
 function branch(ctx, px, py, cx, cy, hexRadius, hexWidth) {
     let nextX = px;
     let nextY = py;

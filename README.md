@@ -1,5 +1,5 @@
 # snowflake
 
-Randomized snowflace drawing.
+Randomized snowflake drawing.
 
 [Online version here](https://fheyen.github.io/snowflake/).

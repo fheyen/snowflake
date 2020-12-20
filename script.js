@@ -1,28 +1,28 @@
 function draw() {
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
-
+    // Get and set sizes
     const w = window.innerWidth;
     const h = window.innerHeight;
     const size = Math.min(w, h) * 0.8;
-
     canvas.style.width = w;
     canvas.style.height = h;
     canvas.width = w;
     canvas.height = h;
-
     // Background
     ctx.fillStyle = 'black';
     ctx.fillRect(0, 0, w, h);
-
+    // Get parameters
+    const ratio = +document.getElementById("hexSizeRatioInput").value;
+    const pBranch = +document.getElementById("pBranchInput").value;
+    const snowflakeRadius = size / 2;
+    const hexRadius = snowflakeRadius * ratio;
     // Snowflake
     ctx.fillStyle = 'white';
     ctx.strokeStyle = 'white';
-    // drawHexagon(ctx, w / 2, h / 2, size / 2);
-    // ctx.fill();
-    // ctx.stroke();
-
-    drawSnowflake(ctx, w / 2, h / 2, size / 2);
+    if (hexRadius > 0.00001) {
+        drawSnowflake(ctx, w / 2, h / 2, snowflakeRadius, hexRadius, pBranch);
+    }
 }
 
 /**
@@ -70,7 +70,6 @@ function getRotatedPositions(px, py, cx, cy) {
         const dy = py - cy;
         startAngle = Math.atan(dy / dx);
     }
-
     // Radius
     const r = Math.hypot((px - cx), (py - cy));
     // Get positions
@@ -83,10 +82,6 @@ function getRotatedPositions(px, py, cx, cy) {
     return points;
 }
 
-function throwDice(sides) {
-    return Math.random() < 1 / sides;
-}
-
 function drawWithSymmetry(ctx, px, py, cx, cy, hexRadius) {
     const positions = getRotatedPositions(px, py, cx, cy);
     for (let { x, y } of positions) {
@@ -97,12 +92,7 @@ function drawWithSymmetry(ctx, px, py, cx, cy, hexRadius) {
     }
 }
 
-function checkCollision(ctx, px, py, hexRadius) {
-    // TODO:
-}
-
-function drawSnowflake(ctx, cx, cy, radius) {
-    const hexRadius = radius / 100;
+function drawSnowflake(ctx, cx, cy, radius, hexRadius, pBranch) {
     const hexWidth = 2 * Math.cos(30 / 180 * Math.PI) * hexRadius;
     // Center
     drawHexagon(ctx, cx, cy, hexRadius);
@@ -118,7 +108,7 @@ function drawSnowflake(ctx, cx, cy, radius) {
         const py = cy;
         // ctx.strokeStyle = 'gray';
         drawWithSymmetry(ctx, px, py, cx, cy, hexRadius);
-        if (throwDice(4)) {
+        if (Math.random() < pBranch) {
             // ctx.strokeStyle = 'white';
             branch(ctx, px, py, cx, cy, hexRadius, hexWidth);
         }

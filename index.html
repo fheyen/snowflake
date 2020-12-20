@@ -4,19 +4,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Randomized Snowflakes</title>
     <script src="script.js"></script>
     <style>
         * {
             margin: 0;
             padding: 0;
             overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .control {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 5px;
+            color: #eee;
+
+        }
+
+        button,
+        input {
+            margin-right: 20px;
+            padding: 5px;
+            background: none;
+            color: #eee;
+            border: 1px solid #666;
+            border-radius: 5px;
+        }
+
+        button {
+            cursor: pointer;
         }
     </style>
 </head>
 
 <body onload="draw()" onresize="draw()">
     <canvas id="canvas"></canvas>
+    <div class="control">
+        <label>
+            branch probability
+            <input id="pBranchInput" type='number' min="0" max="1" step="0.05" value="0.25" onchange="draw()">
+        </label>
+        <label>
+            hexagon size ratio
+            <input id="hexSizeRatioInput" type='number' min="0.001" max="0.1" step="0.001" value="0.01"
+                onchange="draw()">
+        </label>
+        <button onclick="draw()">
+            redraw
+        </button>
+    </div>
 </body>
 
 </html>

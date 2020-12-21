@@ -8,10 +8,14 @@ function draw() {
     const w = window.innerWidth;
     const h = window.innerHeight;
     const size = Math.min(w, h) * 0.8;
-    canvas.style.width = w;
-    canvas.style.height = h;
-    canvas.width = w;
-    canvas.height = h;
+    canvas.style.width = '100%';
+    canvas.style.height = `${window.innerHeight}px`;
+    // Rescale canvas
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
     // Background
     ctx.fillStyle = 'black';
     ctx.fillRect(0, 0, w, h);
@@ -81,7 +85,14 @@ function getRotatedPositions(px, py, cx, cy) {
         const x = cx + Math.cos(angle) * r;
         const y = cy + Math.sin(angle) * r;
         points.push({ x, y });
+        // Mirror if startangle !== 0
+        if (startAngle !== 0) {
+            const y2 = cy - Math.sin(angle) * r;
+            points.push({ x, y: y2 });
+        }
     }
+    console.log(points);
+
     return points;
 }
 
@@ -104,8 +115,10 @@ function drawWithSymmetry(ctx, px, py, cx, cy, hexRadius) {
 function drawSnowflake(ctx, cx, cy, radius, hexRadius, pBranch) {
     const hexWidth = 2 * Math.cos(30 / 180 * Math.PI) * hexRadius;
     // Center
-    drawHexagon(ctx, cx, cy, hexRadius);
-    ctx.stroke();
+    if (Math.random() < 0.5) {
+        drawHexagon(ctx, cx, cy, hexRadius);
+        ctx.fill();
+    }
     // Draw only one arm and use symmetry
     const armLength = radius / hexWidth;
     for (let i = 1; i < armLength; i++) {
@@ -132,6 +145,27 @@ function branch(ctx, px, py, cx, cy, hexRadius, hexWidth) {
         nextY += yOffset;
         drawWithSymmetry(ctx, nextX, nextY, cx, cy, hexRadius);
         nextY2 -= yOffset;
-        drawWithSymmetry(ctx, nextX, nextY2, cx, cy, hexRadius);
+        // drawWithSymmetry(ctx, nextX, nextY2, cx, cy, hexRadius);
+        // Branch branch
+        if (Math.random() < 0.25) {
+            branchBranch(ctx, nextX, nextY, cx, cy, hexRadius, hexWidth);
+        }
+    }
+}
+
+/**
+ * Draws a branch on a branch
+ */
+function branchBranch(ctx, px, py, cx, cy, hexRadius, hexWidth) {
+    let nextX = px;
+    let nextX2 = px;
+    let nextY = py;
+    while (Math.random() < 0.5) {
+        nextX -= hexWidth / 2;
+        const yOffset = Math.sin(60 / 180 * Math.PI) * hexWidth;
+        nextY += yOffset;
+        drawWithSymmetry(ctx, nextX, nextY, cx, cy, hexRadius);
+        nextX2 += hexWidth;
+        drawWithSymmetry(ctx, nextX2, py, cx, cy, hexRadius);
     }
 }

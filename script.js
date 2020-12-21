@@ -32,6 +32,17 @@ function draw() {
     }
 }
 
+function toggleParams() {
+    const elements = document.getElementsByClassName('paramInput');
+    for (let el of elements) {
+        if (el.style.display === 'inline') {
+            el.style.display = 'none';
+        } else {
+            el.style.display = 'inline';
+        }
+    }
+}
+
 /**
  * Draws a hexagon
  * @param {CanvasRenderingContext2D} ctx

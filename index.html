@@ -41,25 +41,32 @@
             color: #eee;
             text-decoration: none;
         }
+
+        .paramInput {
+            display: none;
+        }
     </style>
 </head>
 
 <body onload="draw()" onresize="draw()">
     <canvas id="canvas"></canvas>
     <div class="control">
-        <label>
-            branch probability
+        <button onclick="draw()">
+            ⭯ redraw
+        </button>
+        <button onclick="toggleParams()">
+            &ctdot;
+        </button>
+        <label class="paramInput">
+            ⸙ branch probability
             <input id="pBranchInput" type='number' min="0" max="1" step="0.05" value="0.25" onchange="draw()">
         </label>
-        <label>
-            hexagon size ratio
+        <label class="paramInput">
+            ⬢ hexagon size ratio
             <input id="hexSizeRatioInput" type='number' min="0.001" max="0.1" step="0.001" value="0.01"
                 onchange="draw()">
         </label>
-        <button onclick="draw()">
-            redraw
-        </button>
-        <a href="https://github.com/fheyen/snowflake">code on GitHub</a>
+        <a href="https://github.com/fheyen/snowflake">❴ ❵ code on GitHub</a>
     </div>
 </body>
 

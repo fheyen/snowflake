@@ -6,4 +6,4 @@ Randomized snowflake drawing.
 
 [Examples](./examples/README.md)
 
-![](./examples/snowflake%20(2).png)
+![](./examples/snowflake.png)

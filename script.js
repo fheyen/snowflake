@@ -102,8 +102,6 @@ function getRotatedPositions(px, py, cx, cy) {
             points.push({ x, y: y2 });
         }
     }
-    console.log(points);
-
     return points;
 }
 
@@ -116,7 +114,6 @@ function drawWithSymmetry(ctx, px, py, cx, cy, hexRadius) {
         drawHexagon(ctx, x, y, hexRadius);
         ctx.stroke();
         ctx.fill();
-        // break;
     }
 }
 
@@ -156,7 +153,6 @@ function branch(ctx, px, py, cx, cy, hexRadius, hexWidth) {
         nextY += yOffset;
         drawWithSymmetry(ctx, nextX, nextY, cx, cy, hexRadius);
         nextY2 -= yOffset;
-        // drawWithSymmetry(ctx, nextX, nextY2, cx, cy, hexRadius);
         // Branch branch
         if (Math.random() < 0.25) {
             branchBranch(ctx, nextX, nextY, cx, cy, hexRadius, hexWidth);

@@ -43,6 +43,11 @@ function toggleParams() {
     }
 }
 
+function hideInfo() {
+    const info = document.getElementById('info');
+    info.remove();
+}
+
 /**
  * Draws a hexagon
  * @param {CanvasRenderingContext2D} ctx

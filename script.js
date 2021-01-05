@@ -1,3 +1,5 @@
+FRAME_TIME = 0;
+
 /**
  * Main draw function
  */
@@ -22,13 +24,18 @@ function draw() {
     // Get parameters
     const ratio = +document.getElementById("hexSizeRatioInput").value;
     const pBranch = +document.getElementById("pBranchInput").value;
+    FRAME_TIME = +document.getElementById("speedInput").value;
     const snowflakeRadius = size / 2;
     const hexRadius = snowflakeRadius * ratio;
     // Snowflake
     ctx.fillStyle = 'white';
     ctx.strokeStyle = 'white';
     if (hexRadius > 0.00001) {
-        drawSnowflake(ctx, w / 2, h / 2, snowflakeRadius, hexRadius, pBranch);
+        if (FRAME_TIME > 0) {
+            drawSnowflakeAnimated(ctx, w / 2, h / 2, snowflakeRadius, hexRadius, pBranch);
+        } else {
+            drawSnowflake(ctx, w / 2, h / 2, snowflakeRadius, hexRadius, pBranch);
+        }
     }
 }
 
@@ -146,6 +153,35 @@ function drawSnowflake(ctx, cx, cy, radius, hexRadius, pBranch) {
 }
 
 /**
+ * Draws a snowflake
+ */
+function drawSnowflakeAnimated(ctx, cx, cy, radius, hexRadius, pBranch) {
+    const hexWidth = 2 * Math.cos(30 / 180 * Math.PI) * hexRadius;
+    // Center
+    if (Math.random() < 0.5) {
+        drawHexagon(ctx, cx, cy, hexRadius);
+        ctx.fill();
+    }
+    // Draw only one arm and use symmetry
+    const armLength = radius / hexWidth;
+    let i = 1;
+    const fn = () => {
+        const px = cx + hexWidth * i;
+        const py = cy;
+        drawWithSymmetry(ctx, px, py, cx, cy, hexRadius);
+        // Draw a branch from this position with some probability
+        if (Math.random() < pBranch) {
+            branchAnimated(ctx, px, py, cx, cy, hexRadius, hexWidth);
+        }
+        if (i < armLength) {
+            i++;
+            setTimeout(fn, FRAME_TIME);
+        }
+    };
+    setTimeout(fn, FRAME_TIME);
+}
+
+/**
  * Draws a branch
  */
 function branch(ctx, px, py, cx, cy, hexRadius, hexWidth) {
@@ -166,18 +202,67 @@ function branch(ctx, px, py, cx, cy, hexRadius, hexWidth) {
 }
 
 /**
+ * Draws a branch
+ */
+function branchAnimated(ctx, px, py, cx, cy, hexRadius, hexWidth) {
+    let nextX = px;
+    let nextY = py;
+    let nextY2 = py;
+    const fn = () => {
+        nextX += hexWidth / 2;
+        const yOffset = Math.sin(60 / 180 * Math.PI) * hexWidth;
+        nextY += yOffset;
+        drawWithSymmetry(ctx, nextX, nextY, cx, cy, hexRadius);
+        nextY2 -= yOffset;
+        // Branch branch
+        if (Math.random() < 0.25) {
+            branchBranchAnimated(ctx, nextX, nextY, cx, cy, hexRadius, hexWidth);
+        }
+        if (Math.random() < 0.8) {
+            setTimeout(fn, FRAME_TIME);
+        }
+    };
+    if (Math.random() < 0.8) {
+        setTimeout(fn, FRAME_TIME);
+    }
+}
+
+/**
  * Draws a branch on a branch
  */
 function branchBranch(ctx, px, py, cx, cy, hexRadius, hexWidth) {
     let nextX = px;
     let nextX2 = px;
     let nextY = py;
-    while (Math.random() < 0.5) {
+    while (Math.random() < 0.6) {
         nextX -= hexWidth / 2;
         const yOffset = Math.sin(60 / 180 * Math.PI) * hexWidth;
         nextY += yOffset;
         drawWithSymmetry(ctx, nextX, nextY, cx, cy, hexRadius);
         nextX2 += hexWidth;
         drawWithSymmetry(ctx, nextX2, py, cx, cy, hexRadius);
+    }
+}
+
+/**
+ * Draws a branch on a branch
+ */
+function branchBranchAnimated(ctx, px, py, cx, cy, hexRadius, hexWidth) {
+    let nextX = px;
+    let nextX2 = px;
+    let nextY = py;
+    const fn = () => {
+        nextX -= hexWidth / 2;
+        const yOffset = Math.sin(60 / 180 * Math.PI) * hexWidth;
+        nextY += yOffset;
+        drawWithSymmetry(ctx, nextX, nextY, cx, cy, hexRadius);
+        nextX2 += hexWidth;
+        drawWithSymmetry(ctx, nextX2, py, cx, cy, hexRadius);
+        if (Math.random() < 0.6) {
+            setTimeout(fn, FRAME_TIME);
+        }
+    };
+    if (Math.random() < 0.6) {
+        setTimeout(fn, FRAME_TIME);
     }
 }
